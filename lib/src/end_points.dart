@@ -1,32 +1,24 @@
-
 import 'api_request.dart';
 import 'config.dart';
 
 class EndPoints {
-  ApiRequest? _requester;
-  Map _endPoints = {};
+  late final ApiRequest _requester;
+  late Map _endPoints;
 
   EndPoints(Map options) {
     this._requester = new ApiRequest(options);
 
     this._endPoints = Config.get('ENDPOINTS');
 
-    this._endPoints = Config.isPix(options)
-        ? this._endPoints['PIX']
-        : this._endPoints['DEFAULT'];
+    this._endPoints = Config.isPix(options) ? this._endPoints['PIX'] : this._endPoints['DEFAULT'];
   }
 
-  Future<dynamic> call(String endpoint,
-      {Map<String, dynamic>? params,
-      dynamic body,
-      Map<String, String>? headers}) async {
+  Future<dynamic> call(String endpoint, {Map<String, dynamic>? params, dynamic body, Map<String, String>? headers}) async {
     return await _kernelCall(endpoint, params: params, body: body);
   }
 
-  Future<dynamic> _kernelCall(String endpointName,
-      {Map<String, dynamic>? params, dynamic body}) async {
-    if (this._endPoints[endpointName] == null)
-      throw new Exception("nonexistent endpoint");
+  Future<dynamic> _kernelCall(String endpointName, {Map<String, dynamic>? params, dynamic body}) async {
+    if (this._endPoints[endpointName] == null) throw new Exception("nonexistent endpoint");
 
     dynamic endpoint = this._endPoints[endpointName];
 
@@ -40,9 +32,7 @@ class EndPoints {
     Map<String, dynamic> requestOptions = {
       'body': body != null ? body : {},
     };
-    return await this
-        ._requester
-        ?.send(endpoint['method'], route, requestOptions);
+    return await this._requester.send(endpoint['method'], route, requestOptions);
   }
 
   String _getRoute(endpoint, params) {
